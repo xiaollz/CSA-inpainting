@@ -9,6 +9,8 @@ from .base_model import BaseModel
 from . import networks
 from .vgg16 import Vgg16
 
+import util.util as util
+
 class CSA(BaseModel):
     def name(self):
         return 'CSAModel'
@@ -36,7 +38,10 @@ class CSA(BaseModel):
                                 int(self.opt.fineSize/4) + self.opt.overlap: int(self.opt.fineSize/2) + int(self.opt.fineSize/4) - self.opt.overlap] = 1
 
         self.mask_type = opt.mask_type
-        self.gMask_opts = {}
+        # self.gMask_opts = {}
+        
+        self.freeform_mask = util.freeform_mask(opt)
+        self.freeform_mask = self.freeform_mask.cuda()
 
         if len(opt.gpu_ids) > 0:
             self.use_gpu = True
@@ -115,15 +120,19 @@ class CSA(BaseModel):
         elif self.opt.mask_type == 'random':
             self.mask_global.zero_()
             self.mask_global=input_mask
+        # print mask type
+        elif self.opt.mask_type == 'freeform':
+            self.mask_global.zero_()
+            self.mask_global=self.freeform_mask
         else:
             raise ValueError("Mask_type [%s] not recognized." % self.opt.mask_type)
 
         self.ex_mask = self.mask_global.expand(1, 3, self.mask_global.size(2), self.mask_global.size(3)) # 1*c*h*w
-
+        
         self.inv_ex_mask = torch.add(torch.neg(self.ex_mask.float()), 1).byte()
-        self.input_A.narrow(1,0,1).masked_fill_(self.mask_global, 2*123.0/255.0 - 1.0)
-        self.input_A.narrow(1,1,1).masked_fill_(self.mask_global, 2*104.0/255.0 - 1.0)
-        self.input_A.narrow(1,2,1).masked_fill_(self.mask_global, 2*117.0/255.0 - 1.0)
+        self.input_A.narrow(1,0,1).masked_fill_(self.mask_global, 0)#2*123.0/255.0 - 1.0)
+        self.input_A.narrow(1,1,1).masked_fill_(self.mask_global, 0)#2*104.0/255.0 - 1.0)
+        self.input_A.narrow(1,2,1).masked_fill_(self.mask_global, 0)#2*117.0/255.0 - 1.0)
 
         self.set_latent_mask(self.mask_global, 3, self.opt.threshold)
 
