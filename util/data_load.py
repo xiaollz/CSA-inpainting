@@ -1,23 +1,25 @@
 import random
 import torch
+from torch.utils import data as dt
 from PIL import Image
 from glob import glob
 
 
-class Data_load(torch.utils.data.Dataset):
+class Data_load(dt.Dataset):
     def __init__(self, img_root, mask_root, img_transform, mask_transform):
         super(Data_load, self).__init__()
         self.img_transform = img_transform
         self.mask_transform = mask_transform
 
 
-        self.paths = glob('{:s}/*'.format(img_root),
+        self.paths = glob('{:s}/**/*.jpg'.format(img_root),
                               recursive=True)
 
 
         self.mask_paths = glob('{:s}/*.png'.format(mask_root))
 
         self.N_mask = len(self.mask_paths)
+        print(self.N_mask)
 
     def __getitem__(self, index):
         gt_img = Image.open(self.paths[index])
