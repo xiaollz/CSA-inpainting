@@ -1,6 +1,7 @@
 from __future__ import print_function
 import torch
 import numpy as np
+import cv2
 from PIL import Image
 import random
 import inspect, re
@@ -62,6 +63,30 @@ def create_gMask(gMask_opts):
     else:
         mask_global = mask.expand(1, 1, mask.size(0), mask.size(1))
     return mask_global
+
+def freeform_mask(mask_opts):
+    h, w = mask_opts.img_shape
+    mask = np.zeros((h,w))
+    num_v = np.random.randint(mask_opts.mv)
+
+    for i in range(num_v):
+        start_x = np.random.randint(w)
+        start_y = np.random.randint(h)
+        for j in range(1 + np.random.randint(5)):
+            angle = 0.01 + np.random.randint(mask_opts.ma)
+            if i % 2 == 0:
+                angle = 2 * 3.1415926 - angle
+            length = 10 + np.random.randint(mask_opts.ml)
+            brush_w = 5 + np.random.randint(mask_opts.mbw)
+            end_x = (start_x + length * np.sin(angle)).astype(np.int32)
+            end_y = (start_y + length * np.cos(angle)).astype(np.int32)
+
+            cv2.line(mask, (start_y, start_x), (end_y, end_x), 255.0, brush_w)
+            start_x, start_y = end_x, end_y
+    mask = torch.from_numpy(mask)
+    mask = mask.expand(1, 1, mask.size(0), mask.size(1))
+    return mask
+
 
 # inMask is tensor should be 1*1*256*256 float
 # Return: ByteTensor
