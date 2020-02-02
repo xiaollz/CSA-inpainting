@@ -2,9 +2,9 @@ class Opion():
     
     def __init__(self):
             
-        self.dataroot= r'/home/admin/workspace/shared/Data/places2/data_256' #image dataroot
-        self.maskroot= r'/home/admin/workspace/shared/Data/mask/irregular_mask/disocclusion_img_mask'#mask dataroot
-        self.batchSize= 3   # Need to be set to 1
+        self.dataroot= r'/Data_SSD/shuyiqu/inpaint_data/data_256' #image dataroot
+        self.maskroot= r'/Data_SSD/shuyiqu/inpaint_data/irregular_mask/disocclusion_img_mask'#mask dataroot
+        self.batchSize= 16   # Need to be set to 1
         self.fineSize=256 # image size
         self.input_nc=3  # input channel size for first stage
         self.input_nc_g=6 # input channel size for second stage
@@ -19,14 +19,14 @@ class Opion():
         self.triple_weight=1
         self.name='CSA_inpainting'
         self.n_layers_D='3' # network depth
-        self.gpu_ids=[0]
+        self.gpu_ids=[4]
         self.model='csa_net'
         self.checkpoints_dir=r'./checkpoints' #
         self.norm='instance'
         self.fixed_mask=1
         self.use_dropout=False
         self.init_type='normal'
-        self.mask_type='random'
+        self.mask_type='center'
         self.lambda_A=100
         self.threshold=5/16.0
         self.stride=1
@@ -44,17 +44,17 @@ class Opion():
         self.overlap=4
         self.skip=0
         self.display_freq=1000
-        self.print_freq=50
-        self.save_latest_freq=5000
-        self.save_epoch_freq=2
+        self.print_freq=100
+        self.save_latest_freq=10000
+        self.save_epoch_freq=1
         self.continue_train=False
         self.epoch_count=1
         self.phase='train'
         self.which_epoch=''
-        self.niter=20
-        self.niter_decay=100
+        self.niter=2
+        self.niter_decay=0
         self.beta1=0.5
-        self.lr=0.0002
+        self.lr=0.0032
         self.lr_policy='lambda'
         self.lr_decay_iters=50
         self.isTrain=True

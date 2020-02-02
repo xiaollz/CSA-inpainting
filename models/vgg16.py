@@ -8,7 +8,7 @@ class Vgg16(torch.nn.Module):
         super(Vgg16, self).__init__()
         ## vgg_pretrained_features = models.vgg16(pretrained=True).features
         model = models.vgg16(pretrained=False)
-        pre = torch.load(r'path2/vgg16-397923af.pth')
+        pre = torch.load(r'/home/shuyiqu/feature/vgg16-397923af.pth')
         model.load_state_dict(pre)
         vgg_pretrained_features = model.features
         self.slice1 = torch.nn.Sequential()

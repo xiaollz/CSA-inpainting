@@ -65,7 +65,7 @@ def create_gMask(gMask_opts):
     return mask_global
 
 def freeform_mask(mask_opts):
-    h, w = mask_opts.img_shape
+    h, w = mask_opts.image_shape
     mask = np.zeros((h,w))
     num_v = np.random.randint(mask_opts.mv)
 
