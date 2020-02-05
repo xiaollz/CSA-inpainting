@@ -189,7 +189,7 @@ class CSA(BaseModel):
         self.pred_real_F = self.netF(self.gt_latent_real.relu3_3)
         self.loss_F_fake = self.criterionGAN(self.pred_fake_F,self.pred_real_F, True)
 
-        self.loss_D =self.loss_D_fake * 0.5 + self.loss_F_fake  * 0.5
+        self.loss_D =self.loss_D_fake * 0.01 + self.loss_F_fake  * 0.01
 
         # When two losses are ready, together backward.
         # It is op, so the backward will be called from a leaf.(quite different from LuaTorch)

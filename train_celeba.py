@@ -2,7 +2,7 @@ class Opion():
     
     def __init__(self):
             
-        self.dataroot= r'/Data_SSD/shuyiqu/inpaint_data/data_256' #image dataroot
+        self.dataroot= r'/Data_SSD/shuyiqu/inpaint_data/img_celeba' #image dataroot
         self.maskroot= r'/Data_SSD/shuyiqu/inpaint_data/irregular_mask/disocclusion_img_mask'#mask dataroot
         self.batchSize= 16   # Need to be set to 1
         self.fineSize=256 # image size
@@ -21,7 +21,7 @@ class Opion():
         self.n_layers_D='3' # network depth
         self.gpu_ids=[4]
         self.model='csa_net'
-        self.checkpoints_dir=r'/Data_HDD/shuyiqu/csa' #
+        self.checkpoints_dir=r'/Data_HDD/shuyiqu/csa/celeba' #
         self.norm='instance'
         self.fixed_mask=1
         self.use_dropout=False
@@ -58,7 +58,7 @@ class Opion():
         self.lr_policy='lambda'
         self.lr_decay_iters=50
         self.isTrain=True
-        self.save_dir=r'/Data_HDD/shuyiqu/csa/results'
+        self.save_dir=r'/Data_HDD/shuyiqu/csa/results/celeba'
         # for free-form mask generation
         self.image_shape=[256,256]
         self.mv=20
@@ -75,11 +75,11 @@ import torchvision
 from torch.utils import data as dt
 import torchvision.transforms as transforms
 
-#from tensorboardX import SummaryWriter
+from tensorboardX import SummaryWriter
 
 opt = Opion()
 
-#writer = SummaryWriter()
+writer = SummaryWriter()
 
 transform_mask = transforms.Compose(
     [transforms.Resize((opt.fineSize,opt.fineSize)),
@@ -127,15 +127,15 @@ for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
             pic = (torch.cat([real_A, real_B, fake_B], dim=0) + 1) / 2.0
             torchvision.utils.save_image(pic, '%s/Epoch_(%d)_(%dof%d).jpg' % (
             opt.save_dir, epoch, total_steps + 1, len(dataset_train)), nrow=2)
-            #writer.add_image('input', real_A, total_steps)
-            #writer.add_image('ground_truth', real_B, total_steps)
-            #writer.add_image('output', fake_B, total_steps)
+            writer.add_image('input', real_A, total_steps)
+            writer.add_image('ground_truth', real_B, total_steps)
+            writer.add_image('output', fake_B, total_steps)
         if total_steps %1== 0:
             errors = model.get_current_errors()
-            #writer.add_scalar('loss/G_GAN', errors['G_GAN'], total_steps)
-            #writer.add_scalar('loss/G_L1', errors['G_L1'], total_steps)
-            #writer.add_scalar('loss/D', errors['D'], total_steps)
-            #writer.add_scalar('loss/F', errors['F'], total_steps)
+            writer.add_scalar('loss/G_GAN', errors['G_GAN'], total_steps)
+            writer.add_scalar('loss/G_L1', errors['G_L1'], total_steps)
+            writer.add_scalar('loss/D', errors['D'], total_steps)
+            writer.add_scalar('loss/F', errors['F'], total_steps)
             t = (time.time() - iter_start_time) / opt.batchSize
             print(errors)
             print(t)

@@ -12,7 +12,7 @@ class Data_load(dt.Dataset):
         self.mask_transform = mask_transform
 
 
-        self.paths = glob('{:s}/**/*.jpg'.format(img_root),
+        self.paths = glob('{:s}/*.jpg'.format(img_root),
                               recursive=True)
 
 
